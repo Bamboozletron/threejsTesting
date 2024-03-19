@@ -1,12 +1,14 @@
 import * as THREE from 'three'
 import Renderer from './Renderer/Renderer';
 import TestScene from './Scenes/TestScene';
+import DiscardTesting from './Scenes/DiscardTesting';
+import BaseScene from './Scenes/SceneSetup/BaseScene';
 
 // One large "full screen" renderer for this testing
 class ThreeJSTesting
 {
     renderer: Renderer;
-    baseScene: TestScene;
+    baseScene: BaseScene;
 
     previousT: number = 0;
 
@@ -16,21 +18,20 @@ class ThreeJSTesting
       this.renderer = new Renderer();
     }
 
-    initialize()
+    async initialize()
     {
         // Create single renderer set as full screen
         this.renderer = new Renderer();        
         this.renderer.initialize();
-
-        //  this.testRenderer = new THREE.WebGLRenderer();        
+   
         document.body.appendChild(this.renderer.domElement);            
 
-        this.baseScene.initialize();
+        await this.baseScene.initialize(this.renderer);
         this.renderer.activeScene = this.baseScene;    
+        this.renderer.setClearColor(0x999999, 1.0);
 
         // Start game loop        
         this.raf_();
-
 
     }
 
@@ -40,7 +41,7 @@ class ThreeJSTesting
           let delta: number = t - this.previousT;
           this.previousT = t;
 
-          this.baseScene.update(delta);
+          this.baseScene.update(delta/1000);
           this.renderer.renderScene();
           this.raf_();          
         });
