@@ -1,5 +1,7 @@
 # threejsTesting
-Testing out some three.js
+Testing out some three.js.
+Not architected super well, just mostly learning typescipt and threejs stuff.
 
-Fake liquid and outline done with pixel shaders.
-![visual](https://github.com/Bamboozletron/threejsTesting/assets/163564902/7241dc4d-8ef8-4ac6-959f-4ff024027916)
+The liquid is a separate mesh that gets pixels discarded in the pixel shader based on Y value.  Outline done in pixel shade based on fresnel lighting I was learning about.
+
+![labTest](https://github.com/Bamboozletron/threejsTesting/assets/163564902/531d0fdd-0cfd-4fa4-af9b-8347c59c4faf)
