@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import * as ThreeHelpers from '../Util/ThreeHelpers';
 
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import BaseScene from './SceneSetup/BaseScene'
@@ -50,9 +49,10 @@ export default class TestScene extends BaseScene
 
         // Create basic scene.  Skybox + Orbit controls
         this.mainCamera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100.0);
-        this.mainCamera.position.set(0,1.8,2.5);
+        this.mainCamera.position.set(0,1.6,2.2);        
 
         this.orbit = new OrbitControls(this.mainCamera, renderer.domElement);
+        this.orbit.target.set(0.0, 1.0, 0);
         this.orbit.update();
 
         const skyboxLoader = new THREE.CubeTextureLoader();
