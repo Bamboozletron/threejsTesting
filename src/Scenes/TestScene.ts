@@ -235,6 +235,7 @@ export default class TestScene extends BaseScene
         return minMax;
     }
 
+    // Mouse Input basics based on https://www.youtube.com/watch?v=CbUhot3K-gc.  Small tutorial about mouse input using raycaster.
     handleMouseIntersection(event: MouseEvent)
     {
         this.pointer.x = (event.clientX/window.innerWidth) * 2 - 1;

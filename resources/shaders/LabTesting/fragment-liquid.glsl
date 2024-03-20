@@ -1,4 +1,6 @@
 
+// Based on shaders from SimovDev GLSL course: https://simondev.teachable.com/
+
 uniform vec3 uBaseColor;
 uniform vec3 uAmbient;
 uniform vec3 uLevels;

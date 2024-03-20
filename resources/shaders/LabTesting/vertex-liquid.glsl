@@ -1,4 +1,6 @@
 
+// Based on shaders from SimovDev GLSL course: https://simondev.teachable.com/
+
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 vModelPos;

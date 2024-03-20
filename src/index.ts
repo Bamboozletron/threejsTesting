@@ -1,10 +1,9 @@
 import * as THREE from 'three'
 import Renderer from './Renderer/Renderer';
 import TestScene from './Scenes/TestScene';
-import DiscardTesting from './Scenes/DiscardTesting';
 import BaseScene from './Scenes/SceneSetup/BaseScene';
 
-// One large "full screen" renderer for this testing
+// One large "full screen" renderer for this testing.
 class ThreeJSTesting
 {
     renderer: Renderer;
