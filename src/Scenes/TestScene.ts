@@ -9,26 +9,32 @@ import Renderer from '../Renderer/Renderer';
 
 export default class TestScene extends BaseScene
 {
+    // Controls + time  (Could feasibly be put in BaseScene probably, but not 100% sure if they should yet)
     orbit: OrbitControls | null = null;
-
     timeElapsed: number = 0;
 
-    // Objects for the scene
+    // Objects for the scene (Will be pulled from the gltf model)
     desk: THREE.Object3D | undefined;
     beaker: THREE.Object3D | undefined;
     beakerLiquid: THREE.Object3D | undefined;
     flask: THREE.Object3D | undefined;
     flaskLiquid: THREE.Object3D | undefined;
 
-    liquidMat!: THREE.ShaderMaterial;
-    glassMat!: THREE.ShaderMaterial;
+    // Materials
+    tableMat!: THREE.ShaderMaterial;
+
+    beakerLiquidMat!: THREE.ShaderMaterial;
+    beakerGlassMat!: THREE.ShaderMaterial;
+
+    flaskLiquidMat!: THREE.ShaderMaterial;
+    flaskGlassMat!: THREE.ShaderMaterial;
 
     // Lights
     ambientLight!: THREE.AmbientLight;
     directionalLight!: THREE.DirectionalLight;
 
+    // Liquid levels (Conveniently the same for models I have setup)
     flaskLiquidLevels: meshMinMaxY;
-
 
     wasGlassSelected: boolean = false;
 
@@ -81,20 +87,23 @@ export default class TestScene extends BaseScene
         this.assignObjects(meshArray);
 
         // Luckly it's the same in the model, otherwise would have to switch uniforms per liquid
-        this.flaskLiquidLevels = this.findMinMaxLiquids(<THREE.Mesh>this.flaskLiquid);
-        console.log(this.flaskLiquidLevels);
+        this.flaskLiquidLevels = this.findMinMaxLiquids(<THREE.Mesh>this.flaskLiquid);        
 
-        const tableMat = await this.loadTableMaterial();
-        this.glassMat = await this.loadGlassMat();
-        this.liquidMat = await this.loadLiquidMat();
+        this.tableMat = await this.loadTableMaterial();
 
-        (<THREE.Mesh>this.desk).material = tableMat;
+        this.beakerGlassMat = await this.loadGlassMat();
+        this.beakerLiquidMat = await this.loadLiquidMat();
+
+        this.flaskGlassMat = await this.loadGlassMat();
+        this.flaskLiquidMat = await this.loadLiquidMat();
+
+        (<THREE.Mesh>this.desk).material = this.tableMat;
         
-        (<THREE.Mesh>this.beaker).material = this.glassMat;
-        (<THREE.Mesh>this.flask).material = this.glassMat;
+        (<THREE.Mesh>this.beaker).material = this.beakerGlassMat;
+        (<THREE.Mesh>this.flask).material = this.flaskGlassMat;
 
-        (<THREE.Mesh>this.beakerLiquid).material = this.liquidMat;
-        (<THREE.Mesh>this.flaskLiquid).material = this.liquidMat;        
+        (<THREE.Mesh>this.beakerLiquid).material = this.beakerLiquidMat;
+        (<THREE.Mesh>this.flaskLiquid).material = this.flaskLiquidMat;        
 
         for(var k in meshArray)
         {
@@ -126,7 +135,6 @@ export default class TestScene extends BaseScene
             }
         }
     }
-
 
     async loadTableMaterial()
     {
@@ -235,14 +243,23 @@ export default class TestScene extends BaseScene
         this.raycaster.setFromCamera(this.pointer, this.mainCamera);
         const intersect = this.raycaster.intersectObjects(this.children);
 
+        // Could definitely put this out into their own entities handling of mouseInteraction, kind of messy like this
         if (intersect.length > 0)
         {  
             if (intersect[0].object == this.flask || intersect[0].object == this.beaker)
             {
                 if (!this.wasGlassSelected)
-                {
+                {                    
                     this.wasGlassSelected = true;
-                    this.glassMat.uniforms.uSelected.value = true;
+
+                    if (intersect[0].object == this.flask)
+                    {
+                        this.flaskGlassMat.uniforms.uSelected.value = true;
+                    }
+                    else
+                    {
+                        this.beakerGlassMat.uniforms.uSelected.value = true;                    
+                    }
                 }
             }
             else
@@ -250,18 +267,20 @@ export default class TestScene extends BaseScene
                 if (this.wasGlassSelected)
                 {
                     this.wasGlassSelected = false;
-                    this.glassMat.uniforms.uSelected.value = false;
+                    this.flaskGlassMat.uniforms.uSelected.value = false;
+                    this.beakerGlassMat.uniforms.uSelected.value = false;
                 }
             }
         }
         else
+        {
+            if (this.wasGlassSelected)
             {
-                if (this.wasGlassSelected)
-                {
-                    this.wasGlassSelected = false;
-                    this.glassMat.uniforms.uSelected.value = false;
-                }
+                this.wasGlassSelected = false;
+                this.flaskGlassMat.uniforms.uSelected.value = false;
+                this.beakerGlassMat.uniforms.uSelected.value = false;
             }
+        }
     }
     
     update(delta: number)
@@ -270,10 +289,13 @@ export default class TestScene extends BaseScene
         this.orbit?.update();
         this.timeElapsed += delta;        
 
-        if (this.liquidMat)
+        // Only need to check one really, but the whole load flow is a bit broken
+        if (this.beakerLiquidMat && this.flaskLiquidMat)
         {
-            this.liquidMat.uniforms.uTime.value = this.timeElapsed;
+            this.beakerLiquidMat.uniforms.uTime.value = this.timeElapsed + 2.0;
+            this.flaskLiquidMat.uniforms.uTime.value = this.timeElapsed;
         }
+
     }
 
     onMouseMove(event: MouseEvent)

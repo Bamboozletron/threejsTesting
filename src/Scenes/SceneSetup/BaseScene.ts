@@ -6,8 +6,7 @@ export default class BaseScene extends THREE.Scene
 {
     mainCamera: THREE.Camera;
 
-    // Mouse movement / raycaster
-       
+    // Mouse movement / raycaster       
     pointer: THREE.Vector2;
     raycaster: THREE.Raycaster;
     
