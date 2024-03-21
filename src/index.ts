@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import Renderer from './Renderer/Renderer';
 import TestScene from './Scenes/TestScene';
+import GeometryTesting from './Scenes/GeometryTesting';
 import BaseScene from './Scenes/SceneSetup/BaseScene';
 
 // One large "full screen" renderer for this testing.

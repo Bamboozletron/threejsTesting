@@ -20,6 +20,8 @@ export default class GeometryTesting extends BaseScene
     noise: any;
     noiseSeed: number = 0;
 
+    geometry: any;
+
     constructor()
     {
         super();
@@ -58,37 +60,22 @@ export default class GeometryTesting extends BaseScene
 
     setupGeometry()
     {   
-        const geometry = new THREE.PlaneGeometry(100, 100, this.resolution, this.resolution);
+        this.geometry = new THREE.PlaneGeometry(100, 100, this.resolution, this.resolution);
         const mat = new THREE.MeshPhongMaterial({
             color: 0xeeeeee, wireframe: true
         });        
         
-        const mesh = new THREE.Mesh(geometry, mat);
+        this.geometry.rotateX(-Math.PI/2.0);
 
-        geometry.rotateX(-Math.PI/2.0);
+        const position = this.geometry.attributes.position;        
+        position.usage = THREE.DynamicDrawUsage;
 
-        let vertices = [];
+        for ( let i = 0; i < position.count; i ++ ) {
 
-        // Adjust vertices based on noise
-        for (let i = 0; i < mesh.geometry.attributes.position.count; i++)
-        {
-            let v3 = new THREE.Vector3();
-            v3.fromBufferAttribute(mesh.geometry.attributes.position, i);
-            vertices.push(v3);
+            position.setY(i, 2.5);
         }
 
-        for (let i = 0; i < this.resolution + 1; i++)
-        {
-            for (let j = 0; j < this.resolution; j++)
-            {
-                vertices[i*this.resolution + j].y = this.noise.noise(i+1, j, this.noiseSeed) * 10.0;
-            }
-        }
-
-        for (let i = 0; i < vertices.length; i++)
-        {
-            mesh.geometry.attributes.position.setXYZ(i, vertices[i].x, vertices[i].y, vertices[i].z);
-        }
+        const mesh = new THREE.Mesh(this.geometry, mat);        
 
         this.add(mesh); 
     }
@@ -97,6 +84,14 @@ export default class GeometryTesting extends BaseScene
     {
 
         this.timeElapsed += delta;        
+
+        const position = this.geometry.attributes.position;        
+        for ( let i = 0; i < position.count; i ++ ) {
+
+            const y = 5 * Math.sin(this.timeElapsed + i*5.0);
+            position.setY( i, y );
+        }
+        position.needsUpdate = true;
 
     }
 }
