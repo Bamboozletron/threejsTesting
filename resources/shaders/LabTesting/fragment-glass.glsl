@@ -35,7 +35,7 @@ void main() {
 
   vec3 specular = vec3(phongValue);
 
-  // Fresnel
+  // Fresnel - I think this could be  done without the 1.0 - (result), but my brain can't figure it out yet.  Possibly weirds out the pow
   float fresnel = 1.0 - max(0.0, dot(viewDir, normal));
   fresnel = pow(fresnel, 1.0);
 
